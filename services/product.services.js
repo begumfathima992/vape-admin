@@ -43,6 +43,14 @@ class ProductServices {
             return res.status(500).json({ message: error?.message, statusCode: 500, success: false })
         }
     }
+    async get(req,res){
+        try {
+            
+        } catch (er) {
+            console.log(er,"get in prodct")
+            return
+        }
+    }
 }
 const productServiceObj = new ProductServices()
 export default productServiceObj

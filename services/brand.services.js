@@ -17,7 +17,7 @@ class BrandServices {
                 created_by: loginUser?.id
             }
             await brandModel.create(obj)
-            return res.status(201).json({ message: 'brand added success', statusCode: 201, success: true })
+            return res.status(201).json({ message: 'Brand Added Success', statusCode: 201, success: true })
         } catch (error) {
             return res.status(500).json({ message: error?.message, statusCode: 500, success: false })
         }
