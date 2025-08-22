@@ -1,3 +1,4 @@
+import { USerLoginSchema, UserSchema } from "../helpers/validator/user.validator.js";
 import productServiceObj from "../services/product.services.js";
 import { UserServiceObj } from "../services/user.services.js";
 
@@ -8,6 +9,20 @@ const options = {
 };
 
 class UserController {
+    
+    async register(req, res) {
+        try {
+            let { error } = UserSchema.validate(req.body, options)
+            if (error) {
+                return res.status(400).json({ message: error?.details[0]?.message, statusCode: 400, success: false })
+            }
+            await UserServiceObj.regsiter(req, res)
+        } catch (error) {
+            return res.status(500).json({ message: error?.message, statusCode: 500, success: false })
+        }
+    }
+
+
     async login(req, res) {
         try {
             // console.log("first", req.body)
