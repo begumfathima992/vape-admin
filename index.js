@@ -11,6 +11,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/uploads", express.static("uploads"));
+
 app.use("/success", (req, res) => {
     return res.status(200).json({ message: "succcess message", statusCode: 200, success: true })
 });

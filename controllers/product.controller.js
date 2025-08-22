@@ -1,4 +1,4 @@
-import { ImageFileCheckForUI } from "../helpers/multer.js";
+import { ImageFileCheckForUI, removefIle } from "../helpers/multer.js";
 import { addProductchema } from "../helpers/validator/product.validator.js";
 import productServiceObj from "../services/product.services.js";
 
@@ -8,6 +8,7 @@ const options = {
     stripUnknown: true,
 };
 class ProductController {
+
     async add(req, res) {
         try {
             let { error } = addProductchema.validate(req?.body, options);
@@ -16,21 +17,19 @@ class ProductController {
                     .status(400)
                     .json({ message: error.details[0]?.message, success: false });
             }
-            console.log(req.files, "wwwwwwwwwwwwwwww")
+            // console.log(req.files, "wwwwwwwwwwwwwwww")
             // return
-            if (req.files && req.files?.images?.length) {
-                for (let le of req.files.images) {
-                    let name = el?.filename;
+            let checkStatusOfImage = []
+            if (req.files && req.files?.length) {
+                for (let el of req.files) {
+                    let name = `${req.body.title}/${el?.filename?.replace(/\s+/g, "_")}`;
                     let size = el?.size;
-                    let get = await ImageFileCheckForUI(name, size);
+
+                    let get = await ImageFileCheckForUI(`${name}`, size);
+                    // console.log(get, "gggggg")
+
                     if (get == "invalid file") {
-                        try { removefIle(name) } catch (er) { console.log(er, "eoror in remove product imgae") }
-                        return res.status(400).json({
-                            message:
-                                "Product image must be png or jpeg or webp file and size must be less than 500 kb",
-                            statusCode: 400,
-                            success: false,
-                        });
+                        checkStatusOfImage.push(el?.filename)
                     }
                 }
             } else {
@@ -40,7 +39,15 @@ class ProductController {
                     statusCode: 400,
                 });
             }
-
+            if (checkStatusOfImage && checkStatusOfImage?.length > 0) {
+                return res.status(400).json({
+                    message:
+                        `This Product image : "${checkStatusOfImage?.toString()}" must be PNG or JPEG or WEBP file and SIZE must be less than 500 kb`,
+                    statusCode: 400,
+                    success: false,
+                });
+            }
+            // return
             await productServiceObj.add(req, res)
         } catch (error) {
             return res.status(500).json({ message: error?.message, statusCode: 500, success: false })

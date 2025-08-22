@@ -9,10 +9,10 @@ export const uploadProduct = multer({
 
 // Storage configuration for multer
 const storage = multer.diskStorage({
-  
+
   destination: function (req, file, cb) {
     const folderPath = `uploads/products/${req.body.title}`;
-    
+
     // Check if folder exists, if not create it
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
@@ -21,8 +21,8 @@ const storage = multer.diskStorage({
   },
 
   filename: function (req, file, cb) {
-    console.log(file, 'fileee')
-    cb(null,  file.originalname);
+    // console.log(file, 'fileee')
+    cb(null, file.originalname?.replace(/\s+/g,"_"));
   }
 });
 
@@ -60,12 +60,17 @@ function checkFileSignature(buffer) {
 }
 
 
+const maxSize = 500 * 1024;// one mb // 2mb -> 2 * 1024 * 1024; // 500 kb -> 500 * 1024
+
 export async function ImageFileCheckForUI(name, size) {
   try {
     const filePath = `./uploads/products/${name}`;
-    // console.log(filePath,"filepasthhhhhhh")
+    console.log(filePath, "filepasthhhhhhh")
+
     let check = fs.readFileSync(filePath);
     const filetype = checkFileSignature(check);
+    console.log(filetype, 'filetypefiletype')
+
     if (filetype == "PNG" || filetype == "JPEG" || filetype == "WEBP" || filetype == 'JPG') {
       if (size > maxSize) {
         // console.log(size,maxSize,"sssssssssss")
@@ -86,7 +91,7 @@ export async function ImageFileCheckForUI(name, size) {
 
 export async function removefIle(name, data) {
   try {
-    let filePath = `./uploads/${name}`;
+    let filePath = `./uploads/products/${name}`;
 
     // if (data == "category") {
     //   filePath = `./src/uploads/filterProduct/category/${name}`;

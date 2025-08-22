@@ -5,7 +5,7 @@ import productModel from "../models/product.model.js";
 class ProductServices {
     async add(req, res) {
         try {
-            console.log(req.body,'req.bodyreq.bodyreq.body')
+            console.log(req.body, 'req.bodyreq.bodyreq.body')
             let { title, description, brand_id, universal_standard_code } = req.body
             let loginUser = req.userData
 
@@ -14,6 +14,7 @@ class ProductServices {
             if (!findBrand) {
                 return res.status(400).json({ message: "Brand not exist", statusCode: 400, success: false })
             }
+
             //check product name exist
             let findProduct = await productModel?.findOne({ where: { title: title }, raw: true, attributes: ['id'] })
             if (findProduct && findProduct?.id) {
@@ -26,43 +27,19 @@ class ProductServices {
                 universal_standard_code,
                 created_by: loginUser?.id
             }
-            upload.array("images", 10)(req, res, async (err) => {
-                if (err) {
-                    console.log(err,'eeerr ')
-                    return res.status(400).json({
-                        message: "Error uploading images",
-                        error: err.message,
-                        success: false
-                    });
-                }
-            })
-
-            // ✅ Validate each uploaded file
+            let images = []
             if (req.files && req.files?.length) {
                 for (let el of req.files) {
-                    let name = el?.filename;
-                    let size = el?.size;
-                    let get = await ImageFileCheckForUI(name, size);
-                    if (get == "invalid file") {
-                        try { removefIle(name) } catch (er) { console.log(er, "eoror in remove product imgae") }
-                        return res.status(400).json({
-                            message:
-                                "Product image must be png or jpeg or webp file and size must be less than 500 kb",
-                            statusCode: 400,
-                            success: false,
-                        });
-                    }
+                    let name = `${title}/${el?.filename?.replace(/\s+/g,"_")}`;
+                    images.push(name)
                 }
-            } else {
-                return res.status(400).json({
-                    message: "Product image is mandatory",
-                    success: false,
-                    statusCode: 400,
-                });
             }
+            obj.images = images
+
             await productModel.create(obj)
+            return res.status(201).json({ message: "Product Added Success", statusCode: 201, success: true })
         } catch (error) {
-            console.log(error,"eeeeee")
+            console.log(error, "eeeeee")
             return res.status(500).json({ message: error?.message, statusCode: 500, success: false })
         }
     }
