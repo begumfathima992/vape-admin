@@ -7,6 +7,7 @@ export const uploadProduct = multer({
   storage: storageProductAdd,
 });
 
+
 // Storage configuration for multer
 const storage = multer.diskStorage({
 
@@ -22,22 +23,9 @@ const storage = multer.diskStorage({
 
   filename: function (req, file, cb) {
     // console.log(file, 'fileee')
-    cb(null, file.originalname?.replace(/\s+/g,"_"));
+    cb(null, file.originalname?.replace(/\s+/g, "_"));
   }
 });
-
-
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp/;
-  const extName = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimeType = allowedTypes.test(file.mimetype);
-
-  if (extName && mimeType) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed!"));
-  }
-};
 
 export const upload = multer({ storage: storage });
 
@@ -62,9 +50,12 @@ function checkFileSignature(buffer) {
 
 const maxSize = 500 * 1024;// one mb // 2mb -> 2 * 1024 * 1024; // 500 kb -> 500 * 1024
 
-export async function ImageFileCheckForUI(name, size) {
+export async function ImageFileCheckForUI(name, size, tableName) {
   try {
-    const filePath = `./uploads/products/${name}`;
+    let filePath = `./uploads/products/${name}`;
+    if (tableName == 'brands') {
+      filePath = `./uploads/brands/${name}`;
+    }
     console.log(filePath, "filepasthhhhhhh")
 
     let check = fs.readFileSync(filePath);
@@ -80,7 +71,6 @@ export async function ImageFileCheckForUI(name, size) {
         return "valid file";
       }
     } else if (filetype == null) {
-
       await fs.unlinkSync(filePath);
       return "invalid file";
     }
@@ -89,26 +79,40 @@ export async function ImageFileCheckForUI(name, size) {
   }
 }
 
-export async function removefIle(name, data) {
+export async function removefIle(name, tableName) {
   try {
     let filePath = `./uploads/products/${name}`;
+    if (tableName == 'brands') {
+      filePath = `./uploads/${tableName}/${name}`;
+    }
 
-    // if (data == "category") {
-    //   filePath = `./src/uploads/filterProduct/category/${name}`;
-    // } else if (data == "bestSeller") {
-    //   filePath = `./src/uploads/bestSeller/${name}`;
-    // } else if (data == "gender") {
-    //   filePath = `./src/uploads/filterProduct/gender/${name}`;
-    // } else if (data == "educationInfo") {
-    //   filePath = `./src/uploads/educationCertificate/${name}`;
-    // } else if (data == 'ui') {
-    //   filePath = `./src/uploads/ui/${name}`;
-    // } else if (data == 'footer') {
-    //   filePath = `./src/uploads/footer/${name}`;
-    // }
     console.log(filePath, "filepathdwqdqw");
     await fs.unlinkSync(filePath);
   } catch (err) {
     console.error(err, "err removefIle");
   }
 }
+
+
+//////brand image setup
+
+// Storage configuration for multer
+const storage_brand = multer.diskStorage({
+
+  destination: function (req, file, cb) {
+    const folderPath = `uploads/brands/${req.body.title}`;
+
+    // Check if folder exists, if not create it
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+    cb(null, folderPath);
+  },
+
+  filename: function (req, file, cb) {
+    // console.log(file, 'fileee')
+    cb(null, file.originalname?.replace(/\s+/g, "_"));
+  }
+});
+
+export const upload_brand = multer({ storage: storage_brand });

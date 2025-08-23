@@ -19,6 +19,7 @@ class ProductController {
             }
             // console.log(req.files, "wwwwwwwwwwwwwwww")
             // return
+            
             let checkStatusOfImage = []
             if (req.files && req.files?.length) {
                 for (let el of req.files) {

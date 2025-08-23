@@ -8,6 +8,8 @@ const brandModel = dbconnection.define(
     description: { type: DataTypes.STRING, required: true },
     images: { type: DataTypes.JSON, required: false, allowNull: true },
     status: { type: DataTypes.ENUM("active", 'inactive'), defaultValue: "active" },
+    parent_id: { type: DataTypes.BIGINT, allowNull: true },
+    
     created_by: { type: DataTypes.STRING, allowNull: true },
     created_at: {
         type: DataTypes.DATE,
