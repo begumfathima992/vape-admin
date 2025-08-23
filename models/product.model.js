@@ -8,10 +8,10 @@ const productModel = dbconnection.define(
     brand_id: { type: DataTypes.STRING, required: true },
     description: { type: DataTypes.STRING, required: true },
     images: { type: DataTypes.JSON, required: false, allowNull: true },
-    // universal_standard_code: {
-    //     type: DataTypes.STRING,
-    //     allowNull: true,
-    // },
+    images: { type: DataTypes.JSON, required: false, defaultValue: 10 },
+    minimum_order_quantity: { type: DataTypes.BIGINT, required: false, defaultValue: 3 },
+    quantity: { type: DataTypes.BIGINT, required: false, defaultValue: 10 },
+    
     status: {
         type: DataTypes.ENUM("active", "inactive"),
         defaultValue: "active",

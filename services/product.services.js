@@ -6,7 +6,7 @@ class ProductServices {
     async add(req, res) {
         try {
             console.log(req.body, 'req.bodyreq.bodyreq.body')
-            let { title, description, brand_id, universal_standard_code } = req.body
+            let { title, description, brand_id, universal_standard_code,minimum_order_quantity,quantity } = req.body
             let loginUser = req.userData
 
             // check brand
@@ -25,12 +25,13 @@ class ProductServices {
                 description,
                 brand_id,
                 universal_standard_code,
-                created_by: loginUser?.id
+                created_by: loginUser?.id,
+                minimum_order_quantity, quantity
             }
             let images = []
             if (req.files && req.files?.length) {
                 for (let el of req.files) {
-                    let name = `${title}/${el?.filename?.replace(/\s+/g,"_")}`;
+                    let name = `${title}/${el?.filename?.replace(/\s+/g, "_")}`;
                     images.push(name)
                 }
             }
@@ -43,11 +44,11 @@ class ProductServices {
             return res.status(500).json({ message: error?.message, statusCode: 500, success: false })
         }
     }
-    async get(req,res){
+    async get(req, res) {
         try {
-            
+
         } catch (er) {
-            console.log(er,"get in prodct")
+            console.log(er, "get in prodct")
             return
         }
     }
